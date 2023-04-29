@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFields;
+namespace HeadlessLaravel\Fields;
 
 class Link extends Field
 {

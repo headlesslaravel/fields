@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFields;
+namespace HeadlessLaravel\Fields;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;

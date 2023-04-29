@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFields;
+namespace HeadlessLaravel\Fields;
 
 class Section extends Field
 {
