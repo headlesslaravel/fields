@@ -1,0 +1,23 @@
+{
+    "name": "headlesslaravel/fields",
+    "description": "Structure frontend fields with PHP",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "HeadlessLaravel\\Fields\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Brian Dillingham",
+            "email": "brian@dillingham.dev"
+        }
+    ],
+    "require": {
+        "illuminate/support": "^10.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10"
+    }
+}
