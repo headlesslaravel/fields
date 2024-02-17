@@ -1,6 +1,8 @@
-<?php declare(strict_types=1);
+<?php
 
-use HeadlessLaravel\Fields\Fields;
+declare(strict_types=1);
+
+use HeadlessLaravel\Fields\Groups\Form;
 use HeadlessLaravel\Fields\Text;
 use PHPUnit\Framework\TestCase;
 
@@ -8,7 +10,7 @@ final class FieldsFormTest extends TestCase
 {
     public function testDisplayFieldsBasicSetup()
     {
-        $fields = Fields::form([
+        $fields = Form::make([
             Text::make('Name'),
             Text::make('Email Address', 'email'),
         ]);
@@ -24,7 +26,7 @@ final class FieldsFormTest extends TestCase
 
     public function testDisplayFieldsWithArrayValuesSet()
     {
-        $fields = Fields::form([
+        $fields = Form::make([
             Text::make('Name'),
             Text::make('Company', 'company.name'),
         ], [

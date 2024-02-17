@@ -35,7 +35,7 @@ class Field
 
     public function fields(array $fields): Field
     {
-        return $this->meta('fields',  $fields);
+        return $this->meta('fields', $fields);
     }
 
     public function rendering(): void
@@ -66,11 +66,11 @@ class Field
 
     public function when($mode, $callback): self
     {
-        if(is_array($mode) && in_array($this->mode, $mode)) {
+        if (is_array($mode) && in_array($this->mode, $mode)) {
             $callback();
-        } else if(is_string($mode) && $mode === $this->mode) {
+        } elseif (is_string($mode) && $mode === $this->mode) {
             $callback();
-        } else if($mode === true) {
+        } elseif ($mode === true) {
             $callback();
         }
 
@@ -86,7 +86,7 @@ class Field
 
     public function detectComponent(): void
     {
-        if($this->component) {
+        if ($this->component) {
             return;
         }
 

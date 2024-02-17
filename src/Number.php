@@ -8,7 +8,7 @@ class Number extends Field
     {
         $this->when('create', function () {
             $this->prop('type', 'number');
-        })->when('edit', function() {
+        })->when('edit', function () {
             $this->prop('type', 'number');
         });
     }

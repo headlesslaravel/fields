@@ -1,23 +1,32 @@
 <?php
 
-namespace HeadlessLaravel\Fields;
+namespace HeadlessLaravel\Fields\Groups;
 
+use HeadlessLaravel\Fields\Abstract\Fields;
+use HeadlessLaravel\Fields\Field;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Request;
 
-class Fields
+class FieldGroup
 {
     protected array $fields = [];
 
     protected mixed $data = null;
 
-    protected string $mode = 'form';
+    protected static string $mode = 'create';
 
-    public static function new(): self
+    public static function new(): static
     {
-        return new self();
+        return new static();
+    }
+
+    public static function using(string $class, mixed $data = null): array
+    {
+        /** @var Fields $class */
+        $class = new $class();
+
+        return static::new()->make($class->getFields(self::$mode), $data);
     }
 
     public static function for($mode): self
@@ -27,50 +36,9 @@ class Fields
 
     public function mode($mode): self
     {
-        $this->mode = $mode;
+        self::$mode = $mode;
 
         return $this;
-    }
-
-    public function make(array $fields, $data = null): mixed
-    {
-        return $this
-            ->data($data)
-            ->fields($fields)
-            ->render();
-    }
-
-    public static function form(array $fields, $data = null): mixed
-    {
-        return static::new()
-            ->mode('create')
-            ->data($data)
-            ->fields($fields)
-            ->render();
-    }
-
-    public static function display(array $fields, $data = null): mixed
-    {
-        return static::new()
-            ->mode('show')
-            ->data($data)
-            ->fields($fields)
-            ->render();
-    }
-
-    public static function filter(array $filters, $data = null): mixed
-    {
-        $data = $data ?? Request::all();
-
-        $filters = array_map(function ($filter) {
-            return is_string($filter) ? call_user_func(new $filter): $filter;
-        }, $filters);
-
-        return static::new()
-            ->mode('create')
-            ->data($data)
-            ->fields($filters)
-            ->render();
     }
 
     public function fields(array $fields): self
@@ -106,7 +74,7 @@ class Fields
 
         foreach ($this->fields as $field) {
             /** @var Field $field */
-            $field->setMode($this->mode);
+            $field->setMode(self::$mode);
             $field->detectComponent();
 
             if (isset($field->default)) {
@@ -114,7 +82,9 @@ class Fields
             }
 
             $field->rendering();
-            if($field->skip) continue;
+            if ($field->skip) {
+                continue;
+            }
             $fields[] = $field->toArray();
         }
 
@@ -127,13 +97,12 @@ class Fields
 
         foreach ($this->fields as $field) {
             /** @var Field $field */
-
-            if(isset($field->meta['fields'])) {
-                if($output = $this->renderNestedField($field, $this->data)) {
+            if (isset($field->meta['fields'])) {
+                if ($output = $this->renderNestedField($field, $this->data)) {
                     $fields[] = $output;
                 }
             } else {
-                if($output = $this->renderField($field, $this->data)) {
+                if ($output = $this->renderField($field, $this->data)) {
                     $fields[] = $output;
                 }
             }
@@ -149,7 +118,7 @@ class Fields
 
             foreach ($this->fields as $field) {
                 /** @var Field $field */
-                if($output = $this->renderField($field, $row)) {
+                if ($output = $this->renderField($field, $row)) {
                     $fields[] = $output;
                 }
             }
@@ -171,13 +140,13 @@ class Fields
 
     private function renderField(Field $field, $data): ?array
     {
-        $field->setMode($this->mode);
+        $field->setMode(self::$mode);
         $field->setData($data);
         $field->value(data_get($data, $field->key));
         $field->detectComponent();
         $field->rendering();
 
-        if($field->skip) {
+        if ($field->skip) {
             return null;
         }
 
@@ -190,11 +159,11 @@ class Fields
 
         $dataSets = data_get($data, $field->key, []);
 
-//        TODO: make work with eloquent models
+        //        TODO: make work with eloquent models
         // Panel::make()->fields(['name', 'email'])->data($user)
-//        if($dataSets instanceof Model) {
-//            $dataSets = $dataSets->toArray();
-//        }
+        //        if($dataSets instanceof Model) {
+        //            $dataSets = $dataSets->toArray();
+        //        }
 
         foreach ($dataSets as $index => $dataItem) {
             foreach ($field->meta['fields'] as $fieldTemplate) {
@@ -210,21 +179,21 @@ class Fields
     }
 
     // mine
-//    private function mapNestedFields(Field $field): array
-//    {
-//        $fields = [];
-//
-//        foreach($field->meta['fields'] as $nestedField) {
-//            $dataSets = data_get($this->data, $field->key);
-//            foreach($dataSets as $index => $data) {
-//                $nestedField->key = "$field->key.$index.$nestedField->key";
-//
-//                if($output = $this->renderField($nestedField, $this->data)) {
-//                    $fields[] = $output;
-//                }
-//            }
-//        }
-//
-//        return $fields;
-//    }
+    //    private function mapNestedFields(Field $field): array
+    //    {
+    //        $fields = [];
+    //
+    //        foreach($field->meta['fields'] as $nestedField) {
+    //            $dataSets = data_get($this->data, $field->key);
+    //            foreach($dataSets as $index => $data) {
+    //                $nestedField->key = "$field->key.$index.$nestedField->key";
+    //
+    //                if($output = $this->renderField($nestedField, $this->data)) {
+    //                    $fields[] = $output;
+    //                }
+    //            }
+    //        }
+    //
+    //        return $fields;
+    //    }
 }
